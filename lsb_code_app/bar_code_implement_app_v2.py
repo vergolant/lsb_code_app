@@ -30,24 +30,32 @@ def generate_code128_barcode(text, height, width):
     return barcode_bgr
 
 def add_gray_borders(barcode_img):
-    # Создаем копию изображения для добавления рамок
+    # Скопируем картинку для рисования
     bordered = barcode_img.copy()
     
-    # Преобразуем в grayscale и бинаризуем
+    # Переводим в градации серого
     gray = cv2.cvtColor(barcode_img, cv2.COLOR_BGR2GRAY)
-    _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
     
-    # Находим контуры
-    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Инвертируем бинаризацию: тёмные полосы станут белыми на чёрном фоне
+    _, binary_inv = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
     
-    # Рисуем серые рамки вокруг всех элементов
-    cv2.drawContours(bordered, contours, -1, (0, 0, 0), 1)
+    # Ищем все контуры (каждая полоса — свой контур)
+    contours, _ = cv2.findContours(binary_inv, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     
-    # Комбинируем оригинальное изображение с рамками
-    # Чтобы рамки были видны, делаем их немного темнее основного штрихкода
-    combined = cv2.addWeighted(barcode_img, 0.9, bordered, 0.1, 0)
-    
-    return combined
+    # Проходим по всем контурам
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        # Фильтрация мелких «шумовых» контуров (по необходимости)
+        if w > 2 and h > 2:
+            # Рисуем прямоугольник-рамку вокруг каждого элемента
+            cv2.rectangle(
+                bordered,
+                (x, y),
+                (x + w, y + h),
+                (128, 128, 128),  # или (0,0,0) для чёрного
+                thickness=1
+            )
+    return bordered
 
 def embed_alpha_blend(image, barcode_img, alpha=0.3):
     if image.shape != barcode_img.shape:

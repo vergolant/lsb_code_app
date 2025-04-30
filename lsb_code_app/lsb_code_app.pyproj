@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>lsb_code_app</Name>
     <RootNamespace>lsb_code_app</RootNamespace>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,12 +22,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="bar_code_implement_app_v4.py" />
+    <Compile Include="bar_code_implement_app_v3.py" />
     <Compile Include="bar_code_implement_app_v2.py" />
     <Compile Include="encrypt.py" />
     <Compile Include="lsb_code_app.py" />
     <Compile Include="multithread_lsb_code_app.py" />
     <Compile Include="bar_code_implement_app.py" />
     <Compile Include="qr_implement_app.py" />
+    <Compile Include="athene_coder.py" />
     <Compile Include="test.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
